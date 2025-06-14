@@ -1,5 +1,6 @@
 import React from "react";
 import Sidebar from "./Sidebar";
+import TaskSummaryCards from "./TaskSummaryCards";
 
 const Dashboard = () => {
   return (
@@ -14,7 +15,7 @@ const Dashboard = () => {
           <h1 className="text-xl font-semibold text-gray-800">Dashboard</h1>
           <div className="text-sm text-gray-600">Welcome, Developer 👋</div>
         </header>
-
+        <TaskSummaryCards/>
         
       </div>
     </div>
