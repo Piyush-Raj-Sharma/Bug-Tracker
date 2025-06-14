@@ -113,6 +113,42 @@ const TaskTable = () => {
         </table>
       </div>
 
+      {/* Cards for smaller screens */}
+      <div className="md:hidden space-y-4">
+        {tasks.map((task) => (
+          <div
+            key={task.id}
+            className="bg-white shadow rounded-xl p-4 space-y-2 text-sm"
+          >
+            <div className="flex justify-between">
+              <h4 className="font-semibold text-gray-800">{task.title}</h4>
+              <span className={getPriorityStyle(task.priority)}>
+                {task.priority}
+              </span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">Status:</span>
+              <span className={getStatusStyle(task.status)}>{task.status}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Assignee:</span>
+              <span className="text-gray-800">{task.assignee}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Deadline:</span>
+              <span className="text-gray-500">{task.deadline}</span>
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-xs">
+                Edit
+              </button>
+              <button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-xs">
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
