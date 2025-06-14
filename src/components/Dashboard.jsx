@@ -1,6 +1,7 @@
 import React from "react";
 import Sidebar from "./Sidebar";
 import TaskSummaryCards from "./TaskSummaryCards";
+import TaskTable from "./TaskTable";
 
 const Dashboard = () => {
   return (
@@ -15,8 +16,17 @@ const Dashboard = () => {
           <h1 className="text-xl font-semibold text-gray-800">Dashboard</h1>
           <div className="text-sm text-gray-600">Welcome, Developer 👋</div>
         </header>
-        <TaskSummaryCards/>
-        
+
+        {/* Content Area */}
+        <main className="p-6 space-y-6">
+  {/* Cards/Stats */}
+  <TaskSummaryCards />
+
+  {/* Task List Table */}
+  <section className="bg-white rounded-xl shadow-md p-6">
+    <TaskTable />
+  </section>
+</main>
       </div>
     </div>
   );
