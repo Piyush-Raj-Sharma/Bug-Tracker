@@ -4,6 +4,7 @@ import CreateBugBtn from "./CreateBugBtn";
 import TaskFilterBar from "./TaskFilterBar";
 import { nanoid } from "nanoid";
 import CreateTask from "./CreateTask";
+import ViewTaskDrawer from "./ViewTaskDrawer";
 
 const TaskTable = () => {
   const [tasks, setTasks] = useState([
@@ -48,11 +49,14 @@ const TaskTable = () => {
   });
 
   const [showDrawer, setShowDrawer] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [isViewing, setIsViewing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const filteredTasks = tasks.filter((task) => {
     const matchesSearch =
       task.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-      task.assignee.toLocaleLowerCase().includes(filters.search.toLowerCase());
+      task.assignee.toLowerCase().includes(filters.search.toLowerCase());
     const matchesPriority =
       !filters.priority || task.priority === filters.priority;
     const matchesStatus = !filters.status || task.status === filters.status;
@@ -60,17 +64,53 @@ const TaskTable = () => {
   });
 
   const handleDelete = (idToDelete) => {
-    console.log("Deleting task with ID:", idToDelete);
     const updated = tasks.filter((task) => task.id !== idToDelete);
     setTasks(updated);
+  };
+
+  const handleView = (task) => {
+    setSelectedTask(task);
+    setIsViewing(true);
+  };
+
+  const handleCloseView = () => {
+    setIsViewing(false);
+    setSelectedTask(null);
+  };
+
+  const handleEdit = (taskToEdit) => {
+    setSelectedTask(taskToEdit);
+    setIsViewing(false);
+    setIsEditing(true);
+    setShowDrawer(true);
+  };
+
+  const handleSaveTask = (updatedTask) => {
+    if (isEditing) {
+      const updatedTasks = tasks.map((task) =>
+        task.id === updatedTask.id ? updatedTask : task
+      );
+      setTasks(updatedTasks);
+    } else {
+      setTasks([{ ...updatedTask, id: nanoid() }, ...tasks]);
+    }
+
+    setShowDrawer(false);
+    setSelectedTask(null);
+    setIsEditing(false);
   };
 
   return (
     <div className="w-full">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <h3 className="text-xl font-bold text-indigo-700">Task List</h3>
-        <CreateBugBtn onClick={() => setShowDrawer(true)} />
-      <CreateTask isOpen={showDrawer} onClose={() => setShowDrawer(false)} />
+        <CreateBugBtn
+          onClick={() => {
+            setSelectedTask(null);
+            setIsEditing(false);
+            setShowDrawer(true);
+          }}
+        />
       </div>
 
       <TaskFilterBar filters={filters} onFilterChange={setFilters} />
@@ -111,8 +151,11 @@ const TaskTable = () => {
                   {task.deadline}
                 </td>
                 <td className="px-4 py-4 flex gap-2">
-                  <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm">
-                    Edit
+                  <button
+                    onClick={() => handleView(task)}
+                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm"
+                  >
+                    View
                   </button>
                   <button
                     onClick={() => handleDelete(task.id)}
@@ -142,7 +185,9 @@ const TaskTable = () => {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Status:</span>
-              <span className={getStatusStyle(task.status)}>{task.status}</span>
+              <span className={getStatusStyle(task.status)}>
+                {task.status}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Assignee:</span>
@@ -153,8 +198,11 @@ const TaskTable = () => {
               <span className="text-gray-500">{task.deadline}</span>
             </div>
             <div className="flex justify-end gap-2 pt-2">
-              <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-xs">
-                Edit
+              <button
+                onClick={() => handleView(task)}
+                className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-xs"
+              >
+                View
               </button>
               <button
                 onClick={() => handleDelete(task.id)}
@@ -166,6 +214,25 @@ const TaskTable = () => {
           </div>
         ))}
       </div>
+
+      {/* DRAWERS: Create and View */}
+      <CreateTask
+        isOpen={showDrawer}
+        onClose={() => {
+          setShowDrawer(false);
+          setIsEditing(false);
+          setSelectedTask(null);
+        }}
+        onSave={handleSaveTask}
+        defaultValues={selectedTask}
+        isEditing={isEditing}
+      />
+      <ViewTaskDrawer
+        task={selectedTask}
+        isOpen={isViewing}
+        onClose={handleCloseView}
+        onEdit={handleEdit}
+      />
     </div>
   );
 };

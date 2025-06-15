@@ -11,7 +11,7 @@ const TaskFilterBar = ({ filters, onFilterChange }) => {
         onChange={(e) =>
           onFilterChange({ ...filters, search: e.target.value })
         }
-        className="border border-gray-300 px-3 py-2 rounded-md w-full sm:w-[48%] lg:w-1/3"
+        className="border border-gray-300 px-3 py-2 rounded-md w-full sm:w-[48%] lg:w-1/4"
       />
 
       {/* Priority Filter */}
@@ -20,7 +20,7 @@ const TaskFilterBar = ({ filters, onFilterChange }) => {
         onChange={(e) =>
           onFilterChange({ ...filters, priority: e.target.value })
         }
-        className="border border-gray-300 px-3 py-2 rounded-md w-full sm:w-[24%] lg:w-1/4"
+        className="border border-gray-300 px-3 py-2 rounded-md w-full sm:w-[24%] lg:w-1/7"
       >
         <option value="">All Priorities</option>
         <option value="Critical">Critical</option>
@@ -35,7 +35,7 @@ const TaskFilterBar = ({ filters, onFilterChange }) => {
         onChange={(e) =>
           onFilterChange({ ...filters, status: e.target.value })
         }
-        className="border border-gray-300 px-3 py-2 rounded-md w-full sm:w-[24%] lg:w-1/4"
+        className="border border-gray-300 px-3 py-2 rounded-md w-full sm:w-[24%] lg:w-1/7"
       >
         <option value="">All Statuses</option>
         <option value="Pending Start">Pending Start</option>
