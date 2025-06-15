@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { getPriorityStyle, getStatusStyle } from "../utils/TableRenderUtils";
-
+import CretateBugBtn from "./CretateBugBtn";
+import TaskFilterBar from "./TaskFilterBar";
 
 const TaskTable = () => {
   const tasks = [
@@ -29,13 +31,26 @@ const TaskTable = () => {
     },
   ];
 
+  const [filters, setFilters] = useState({ search: "", priority: "", status: "" });
+
+  const filteredTasks = tasks.filter((task) => {
+    const matchesSearch = task.title.toLowerCase().includes(filters.search.toLowerCase()) || task.assignee.toLocaleLowerCase().includes(filters.search.toLowerCase());
+    const matchesPriority = !filters.priority || task.priority === filters.priority;
+    const matchesStatus = !filters.status || task.status === filters.status;
+    return matchesSearch && matchesPriority && matchesStatus;
+  });
 
   return (
     <div className="w-full">
-      <h3 className="text-xl font-bold text-indigo-700 mb-4">Task List</h3>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+        <h3 className="text-xl font-bold text-indigo-700">Task List</h3>
+        <CretateBugBtn />
+      </div>
+
+      <TaskFilterBar filters={filters} onFilterChange={setFilters} />
 
       {/* Table for larger screens */}
-      <div className="hidden md:block overflow-x-auto bg-white rounded-xl shadow">
+      <div className="hidden md:block overflow-x-auto bg-white rounded-xl shadow mt-4">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-indigo-50 text-indigo-700 text-sm font-semibold">
             <tr>
@@ -48,34 +63,20 @@ const TaskTable = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-100">
-            {tasks.map((task) => (
+            {filteredTasks.map((task) => (
               <tr key={task.id} className="hover:bg-gray-50">
-                <td className="px-4 py-4 text-sm text-gray-800">
-                  {task.title}
+                <td className="px-4 py-4 text-sm text-gray-800">{task.title}</td>
+                <td className="px-4 py-4">
+                  <span className={getPriorityStyle(task.priority)}>{task.priority}</span>
                 </td>
                 <td className="px-4 py-4">
-                  <span className={getPriorityStyle(task.priority)}>
-                    {task.priority}
-                  </span>
+                  <span className={getStatusStyle(task.status)}>{task.status}</span>
                 </td>
-                <td className="px-4 py-4">
-                  <span className={getStatusStyle(task.status)}>
-                    {task.status}
-                  </span>
-                </td>
-                <td className="px-4 py-4 text-sm text-gray-700">
-                  {task.assignee}
-                </td>
-                <td className="px-4 py-4 text-sm text-gray-500">
-                  {task.deadline}
-                </td>
+                <td className="px-4 py-4 text-sm text-gray-700">{task.assignee}</td>
+                <td className="px-4 py-4 text-sm text-gray-500">{task.deadline}</td>
                 <td className="px-4 py-4 flex gap-2">
-                  <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm">
-                    Edit
-                  </button>
-                  <button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm">
-                    Delete
-                  </button>
+                  <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm">Edit</button>
+                  <button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm">Delete</button>
                 </td>
               </tr>
             ))}
@@ -84,17 +85,12 @@ const TaskTable = () => {
       </div>
 
       {/* Cards for smaller screens */}
-      <div className="md:hidden space-y-4">
-        {tasks.map((task) => (
-          <div
-            key={task.id}
-            className="bg-white shadow rounded-xl p-4 space-y-2 text-sm"
-          >
+      <div className="md:hidden space-y-4 mt-4">
+        {filteredTasks.map((task) => (
+          <div key={task.id} className="bg-white shadow rounded-xl p-4 space-y-2 text-sm">
             <div className="flex justify-between">
               <h4 className="font-semibold text-gray-800">{task.title}</h4>
-              <span className={getPriorityStyle(task.priority)}>
-                {task.priority}
-              </span>
+              <span className={getPriorityStyle(task.priority)}>{task.priority}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Status:</span>
@@ -109,12 +105,8 @@ const TaskTable = () => {
               <span className="text-gray-500">{task.deadline}</span>
             </div>
             <div className="flex justify-end gap-2 pt-2">
-              <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-xs">
-                Edit
-              </button>
-              <button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-xs">
-                Delete
-              </button>
+              <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-xs">Edit</button>
+              <button className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-xs">Delete</button>
             </div>
           </div>
         ))}
