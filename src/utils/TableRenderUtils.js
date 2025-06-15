@@ -17,7 +17,7 @@ export const getPriorityStyle = (priority) => {
 export const getStatusStyle = (status) => {
   const base = "text-sm font-medium";
   switch (status) {
-    case "To Do":
+    case "Pending Start":
       return `${base} text-gray-600`;
     case "In Progress":
       return `${base} text-blue-600`;

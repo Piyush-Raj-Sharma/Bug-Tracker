@@ -6,7 +6,7 @@ const TaskFilterBar = ({ filters, onFilterChange }) => {
       {/* Search Input */}
       <input
         type="text"
-        placeholder="Search by title..."
+        placeholder="Search anything... "
         value={filters.search}
         onChange={(e) =>
           onFilterChange({ ...filters, search: e.target.value })
@@ -38,7 +38,7 @@ const TaskFilterBar = ({ filters, onFilterChange }) => {
         className="border border-gray-300 px-3 py-2 rounded-md w-full sm:w-[24%] lg:w-1/4"
       >
         <option value="">All Statuses</option>
-        <option value="To Do">To Do</option>
+        <option value="Pending Start">Pending Start</option>
         <option value="In Progress">In Progress</option>
         <option value="Pending Approval">Pending Approval</option>
         <option value="Completed">Completed</option>
