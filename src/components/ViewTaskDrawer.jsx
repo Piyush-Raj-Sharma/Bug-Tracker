@@ -1,66 +1,87 @@
 import React, { useEffect, useState } from "react";
+import { formatDuration, intervalToDuration } from "date-fns";
 
 const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
-  const [isSessionActive, setIsSessionActive] = useState(false);
-  const [sessionStartTime, setSessionStartTime] = useState(null);
-  const [totalTimeSpent, setTotalTimeSpent] = useState(0);
-  const [lastSessionDuration, setLastSessionDuration] = useState(null);
-  const [liveDuration, setLiveDuration] = useState(0);
+  const [timers, setTimers] = useState({});
 
   useEffect(() => {
-    let interval;
-    if (isSessionActive) {
-      interval = setInterval(() => {
-        setLiveDuration(Math.floor((Date.now() - sessionStartTime) / 1000));
-      }, 1000);
-    }
+    const interval = setInterval(() => {
+      setTimers((prev) => {
+        const updated = { ...prev };
+        Object.keys(updated).forEach((taskId) => {
+          if (updated[taskId].isActive) {
+            updated[taskId].liveDuration = Math.floor(
+              (Date.now() - updated[taskId].startTime) / 1000
+            );
+          }
+        });
+        return updated;
+      });
+    }, 1000);
+
     return () => clearInterval(interval);
-  }, [isSessionActive, sessionStartTime]);
-
-  useEffect(() => {
-    if (!isOpen) {
-      setIsSessionActive(false);
-      setSessionStartTime(null);
-      setLiveDuration(0);
-    }
-  }, [isOpen]);
+  }, []);
 
   const toggleSession = () => {
-    if (isSessionActive) {
-      const endTime = Date.now();
-      const duration = Math.floor((endTime - sessionStartTime) / 1000);
-      setTotalTimeSpent((prev) => prev + duration);
-      setLastSessionDuration(duration);
-      setIsSessionActive(false);
-      setLiveDuration(0);
-    } else {
-      setSessionStartTime(Date.now());
-      setIsSessionActive(true);
-      setLastSessionDuration(null);
-    }
+    setTimers((prev) => {
+      const taskId = task.id;
+      const prevState = prev[taskId] || {
+        totalTime: 0,
+        isActive: false,
+        startTime: null,
+        lastSession: null,
+        liveDuration: 0,
+      };
+
+      if (prevState.isActive) {
+        const now = Date.now();
+        const sessionDuration = Math.floor((now - prevState.startTime) / 1000);
+
+        return {
+          ...prev,
+          [taskId]: {
+            totalTime: prevState.totalTime + sessionDuration,
+            isActive: false,
+            startTime: null,
+            lastSession: sessionDuration,
+            liveDuration: 0,
+          },
+        };
+      } else {
+        return {
+          ...prev,
+          [taskId]: {
+            ...prevState,
+            isActive: true,
+            startTime: Date.now(),
+            liveDuration: 0,
+          },
+        };
+      }
+    });
   };
 
-  const formatSeconds = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}m ${secs}s`;
+  const formatTime = (seconds) => {
+    if (!seconds || seconds <= 0) return "0s";
+
+    const duration = intervalToDuration({ start: 0, end: seconds * 1000 });
+    return formatDuration(duration, { delimiter: ", " });
   };
 
   if (!isOpen || !task) return null;
 
+  const taskTimer = timers[task.id] || {};
+
   return (
     <>
-      {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
         onClick={onClose}
       />
 
-      {/* Centered Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-        <div className="bg-white/90 backdrop-blur-xl border border-white/40 shadow-2xl rounded-xl w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl h-[70vh] overflow-hidden flex flex-col transition-all duration-300">
+        <div className="bg-white/90 backdrop-blur-xl border border-white/40 shadow-2xl rounded-xl w-full max-w-xl h-[70vh] overflow-hidden flex flex-col transition-all duration-300">
           <div className="p-6 h-full flex flex-col">
-            {/* Header */}
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-indigo-700">
                 Task Details
@@ -73,7 +94,6 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
               </button>
             </div>
 
-            {/* Content */}
             <div className="space-y-4 overflow-y-auto flex-grow text-sm pr-1">
               <div>
                 <p className="text-gray-500">Title</p>
@@ -83,8 +103,7 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
               <div>
                 <p className="text-gray-500">Description</p>
                 <p className="text-gray-700">
-                  {task.description ||
-                    "Resolve UI glitch on login modal preventing form submission."}
+                  {task.description || "No description provided."}
                 </p>
               </div>
 
@@ -109,43 +128,38 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
 
               <hr className="my-4 border-gray-200" />
 
-              {/* Timer Info */}
               <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 shadow-sm space-y-3">
                 <h3 className="text-sm font-semibold text-indigo-600 mb-1 flex items-center gap-2">
                   ⏱️ Time Tracking
                 </h3>
 
-                {/* Total Time Spent */}
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Total Time Spent</span>
                   <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
-                    {formatSeconds(totalTimeSpent)}
+                    {formatTime(taskTimer.totalTime)}
                   </span>
                 </div>
 
-                {/* Live Session Timer */}
-                {isSessionActive && (
+                {taskTimer.isActive && (
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600">Live Session</span>
                     <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold animate-pulse">
-                      {formatSeconds(liveDuration)}
+                      {formatTime(taskTimer.liveDuration)}
                     </span>
                   </div>
                 )}
 
-                {/* Last Session Duration */}
-                {!isSessionActive && lastSessionDuration !== null && (
+                {!taskTimer.isActive && taskTimer.lastSession !== null && (
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600">Last Session</span>
                     <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium">
-                      {formatSeconds(lastSessionDuration)}
+                      {formatTime(taskTimer.lastSession)}
                     </span>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="mt-6 flex justify-between gap-4">
               <button
                 onClick={() => {
@@ -159,12 +173,12 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
               <button
                 onClick={toggleSession}
                 className={`flex-1 py-2 rounded-lg text-white font-semibold transition ${
-                  isSessionActive
+                  taskTimer.isActive
                     ? "bg-red-500 hover:bg-red-600"
                     : "bg-green-600 hover:bg-green-700"
                 }`}
               >
-                {isSessionActive ? "End Session" : "Start Session"}
+                {taskTimer.isActive ? "End Session" : "Start Session"}
               </button>
             </div>
           </div>
