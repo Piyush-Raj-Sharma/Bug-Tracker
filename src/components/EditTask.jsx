@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import useTaskManager from "../hooks/useTaskManager";
-
 const EditTask = ({ isOpen, onClose, task }) => {
   const { updateTask } = useTaskManager();
   const [currentStatus, setCurrentStatus] = useState("");
-
   const {
     register,
     handleSubmit,
@@ -13,26 +11,21 @@ const EditTask = ({ isOpen, onClose, task }) => {
     watch,
     formState: { errors },
   } = useForm();
-
   // Watch live status changes
   const statusWatch = watch("status");
-
   useEffect(() => {
     if (task) {
       reset(task);
       setCurrentStatus(task.status);
     }
   }, [task, reset]);
-
   useEffect(() => {
     setCurrentStatus(statusWatch);
   }, [statusWatch]);
-
   const onSubmit = (data) => {
     updateTask(task.id, data);
     onClose();
   };
-
   return (
     <>
       {isOpen && (
@@ -41,7 +34,6 @@ const EditTask = ({ isOpen, onClose, task }) => {
           onClick={onClose}
         />
       )}
-
       <div
         className={`fixed top-0 right-0 h-full w-full sm:w-[480px] bg-white/80 backdrop-blur-xl shadow-2xl z-50 transition-transform duration-300 ease-in-out border-l border-white/40 ${
           isOpen ? "translate-x-0" : "translate-x-full"
@@ -57,7 +49,6 @@ const EditTask = ({ isOpen, onClose, task }) => {
               &times;
             </button>
           </div>
-
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 flex-1">
             {/* Title */}
             <div>
@@ -70,7 +61,6 @@ const EditTask = ({ isOpen, onClose, task }) => {
               />
               {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
             </div>
-
             {/* Description */}
             <div>
               <label className="text-sm text-gray-600">Description</label>
@@ -81,7 +71,6 @@ const EditTask = ({ isOpen, onClose, task }) => {
               />
               {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
             </div>
-
             {/* Priority */}
             <div>
               <label className="text-sm text-gray-600">Priority</label>
@@ -97,7 +86,6 @@ const EditTask = ({ isOpen, onClose, task }) => {
               </select>
               {errors.priority && <p className="text-red-500 text-xs mt-1">{errors.priority.message}</p>}
             </div>
-
             {/* Status */}
             <div>
               <label className="text-sm text-gray-600">Status</label>
@@ -112,7 +100,6 @@ const EditTask = ({ isOpen, onClose, task }) => {
               </select>
               {errors.status && <p className="text-red-500 text-xs mt-1">{errors.status.message}</p>}
             </div>
-
             {/* Assignee */}
             <div>
               <label className="text-sm text-gray-600">Assignee</label>
@@ -124,7 +111,6 @@ const EditTask = ({ isOpen, onClose, task }) => {
               />
               {errors.assignee && <p className="text-red-500 text-xs mt-1">{errors.assignee.message}</p>}
             </div>
-
             {/* Due Date */}
             <div>
               <label className="text-sm text-gray-600">Due Date</label>
@@ -135,19 +121,7 @@ const EditTask = ({ isOpen, onClose, task }) => {
               />
               {errors.deadline && <p className="text-red-500 text-xs mt-1">{errors.deadline.message}</p>}
             </div>
-
-            {/* Manager Actions (only if status === Closed) */}
-            {currentStatus === "Closed" && (
-              <div>
-                <label className="text-sm text-gray-600">Manager Actions</label>
-                <textarea
-                  {...register("managerActions")}
-                  className="w-full mt-1 px-4 py-2 rounded-lg bg-white/60 border border-gray-300 resize-none"
-                  placeholder="Describe actions taken after closure..."
-                />
-              </div>
-            )}
-
+            {/* Manager Actions (REMOVED COMPLETELY) */}
             {/* Submit */}
             <div className="pt-4">
               <button
@@ -163,5 +137,4 @@ const EditTask = ({ isOpen, onClose, task }) => {
     </>
   );
 };
-
 export default EditTask;

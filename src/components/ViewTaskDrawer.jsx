@@ -6,11 +6,22 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
   const [timers, setTimers] = useState({});
   const userRole = localStorage.getItem("userRole");
   const { updateTask } = useTaskManager();
+
+  // Approve handler: managerActions = "Approved", status stays closed
   const handleApprove = (taskId) => {
-    updateTask(taskId, { managerActions: "Approved" });
+    if (task && task.status && task.status.toLowerCase() === "closed") {
+      updateTask(taskId, { managerActions: "Approved" });
+    }
   };
+
+  // Reject handler: managerActions = "Rejected", status becomes open
   const handleReject = (taskId) => {
-    updateTask(taskId, { managerActions: "Rejected" });
+    if (task && task.status && task.status.toLowerCase() === "closed") {
+      updateTask(taskId, {
+        managerActions: "Rejected",
+        status: "Open",
+      });
+    }
   };
 
   useEffect(() => {
@@ -27,9 +38,23 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
         return updated;
       });
     }, 3000);
-
     return () => clearInterval(interval);
   }, []);
+
+  // Initialize/reset timer state on task change
+  useEffect(() => {
+    if (!task) return;
+    setTimers((prev) => ({
+      ...prev,
+      [task.id]: prev[task.id] || {
+        totalTime: 0,
+        isActive: false,
+        startTime: null,
+        lastSession: null,
+        liveDuration: 0,
+      },
+    }));
+  }, [task]);
 
   const toggleSession = () => {
     setTimers((prev) => {
@@ -41,11 +66,9 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
         lastSession: null,
         liveDuration: 0,
       };
-
       if (prevState.isActive) {
         const now = Date.now();
         const sessionDuration = Math.floor((now - prevState.startTime) / 1000);
-
         return {
           ...prev,
           [taskId]: {
@@ -77,8 +100,10 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
   };
 
   if (!isOpen || !task) return null;
-
   const taskTimer = timers[task.id] || {};
+
+  // Case-insensitive check for 'closed' status
+  const isClosed = task.status && task.status.toLowerCase() === "closed";
 
   return (
     <>
@@ -86,7 +111,6 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
         className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
         onClick={onClose}
       />
-
       <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
         <div className="bg-white/90 backdrop-blur-xl border border-white/40 shadow-2xl rounded-xl w-full max-w-xl h-[70vh] overflow-hidden flex flex-col transition-all duration-300">
           <div className="p-6 h-full flex flex-col">
@@ -97,24 +121,22 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
               <button
                 onClick={onClose}
                 className="text-gray-500 hover:text-gray-800 text-2xl font-bold"
+                aria-label="Close details"
               >
                 &times;
               </button>
             </div>
-
             <div className="space-y-4 overflow-y-auto flex-grow text-sm pr-1">
               <div>
                 <p className="text-gray-500">Title</p>
                 <p className="text-gray-800 font-medium">{task.title}</p>
               </div>
-
               <div>
                 <p className="text-gray-500">Description</p>
                 <p className="text-gray-700">
                   {task.description || "No description provided."}
                 </p>
               </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-gray-500">Priority</p>
@@ -133,21 +155,17 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
                   <p className="text-gray-800">{task.deadline}</p>
                 </div>
               </div>
-
               <hr className="my-4 border-gray-200" />
-
               <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 shadow-sm space-y-3">
                 <h3 className="text-sm font-semibold text-indigo-600 mb-1 flex items-center gap-2">
                   ⏱️ Time Tracking
                 </h3>
-
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Total Time Spent</span>
                   <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
                     {formatTime(taskTimer.totalTime)}
                   </span>
                 </div>
-
                 {/* Manager sees only total time */}
                 {userRole !== "manager" && (
                   <>
@@ -159,7 +177,6 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
                         </span>
                       </div>
                     )}
-
                     {!taskTimer.isActive && taskTimer.lastSession !== null && (
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600">Last Session</span>
@@ -172,7 +189,6 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
                 )}
               </div>
             </div>
-
             {/* Only developer can edit and toggle session */}
             {userRole === "developer" ? (
               <div className="mt-6 flex justify-between gap-4">
@@ -199,23 +215,30 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
             ) : (
               <div className="mt-6 flex justify-between gap-4">
                 <button
-                  disabled={task.status !== "closed"}
+                  disabled={!isClosed}
                   onClick={() => {
                     onClose();
                     handleApprove(task.id);
                   }}
-                  className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg"
+                  className={`flex-1 py-2 rounded-lg text-white font-semibold transition ${
+                    isClosed
+                      ? "bg-green-600 hover:bg-green-700"
+                      : "bg-green-300 cursor-not-allowed"
+                  }`}
                 >
                   Approve
                 </button>
                 <button
-                  disabled={task.status !== "closed"}
+                  disabled={!isClosed}
                   onClick={() => {
                     onClose();
                     handleReject(task.id);
                   }}
-                  className={`flex-1 py-2 rounded-lg text-white font-semibold transition 
-                    bg-red-500 hover:bg-red-600`}
+                  className={`flex-1 py-2 rounded-lg text-white font-semibold transition ${
+                    isClosed
+                      ? "bg-red-500 hover:bg-red-600"
+                      : "bg-red-300 cursor-not-allowed"
+                  }`}
                 >
                   Reject
                 </button>

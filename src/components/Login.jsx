@@ -91,6 +91,16 @@ const Login = () => {
             Login
           </button>
         </form>
+        <div className="space-y-1 text-sm text-gray-500">
+          <p>
+            <span className="font-medium">Developer:</span> dev@example.com /
+            dev123
+          </p>
+          <p>
+            <span className="font-medium">Manager:</span> manager@example.com /
+            manager123
+          </p>
+        </div>
       </div>
     </div>
   );

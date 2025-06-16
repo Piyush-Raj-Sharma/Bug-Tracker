@@ -11,13 +11,11 @@ import EditTask from "./EditTask";
 const TaskTable = () => {
   const userRole = localStorage.getItem("userRole");
   const { tasks, deleteTask } = useTaskManager();
-
   const [filters, setFilters] = useState({
     search: "",
     priority: "",
     status: "",
   });
-
   const [selectedTask, setSelectedTask] = useState(null);
   const [isViewing, setIsViewing] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
@@ -34,17 +32,14 @@ const TaskTable = () => {
   });
 
   const handleDelete = (id) => deleteTask(id);
-
   const handleView = (task) => {
     setSelectedTask(task);
     setIsViewing(true);
   };
-
   const handleCloseView = () => {
     setIsViewing(false);
     setSelectedTask(null);
   };
-
   const handleEdit = (task) => {
     setSelectedTask(task);
     setShowEditDrawer(true);
@@ -64,10 +59,8 @@ const TaskTable = () => {
           />
         )}
       </div>
-
       {/* Filters */}
       <TaskFilterBar filters={filters} onFilterChange={setFilters} />
-
       {/* Desktop Table */}
       <div className="hidden md:block bg-white rounded-xl shadow mt-4">
         <div className="overflow-auto max-h-[52vh]">
@@ -112,10 +105,9 @@ const TaskTable = () => {
                     <td className="px-4 py-4 text-sm text-gray-500">
                       {task.deadline}
                     </td>
+                    {/* FIX: Always show managerActions */}
                     <td className="px-4 py-4 text-sm text-gray-600">
-                      {task.status === "Closed"
-                        ? task.managerActions || "No action noted"
-                        : "-"}
+                      {task.managerActions || "-"}
                     </td>
                     <td className="px-4 py-4 flex gap-2">
                       <button
@@ -140,7 +132,6 @@ const TaskTable = () => {
           </table>
         </div>
       </div>
-
       {/* Mobile Cards */}
       <div className="md:hidden space-y-4 mt-4">
         {filteredTasks.length === 0 ? (
@@ -173,11 +164,12 @@ const TaskTable = () => {
                 <span className="text-gray-600">Deadline:</span>
                 <span className="text-gray-500">{task.deadline}</span>
               </div>
-              {task.status === "Closed" && (
+              {/* FIX: Show Manager Actions always if set */}
+              {task.managerActions && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Manager Actions:</span>
                   <span className="text-gray-700">
-                    {task.managerActions || "No action noted"}
+                    {task.managerActions}
                   </span>
                 </div>
               )}
@@ -210,7 +202,6 @@ const TaskTable = () => {
           ))
         )}
       </div>
-
       {/* Drawers */}
       <CreateTask
         isOpen={showDrawer}
@@ -219,14 +210,12 @@ const TaskTable = () => {
           setSelectedTask(null);
         }}
       />
-
       <ViewTaskDrawer
         task={selectedTask}
         isOpen={isViewing}
         onClose={handleCloseView}
         onEdit={handleEdit}
       />
-
       <EditTask
         isOpen={showEditDrawer}
         onClose={() => {
@@ -238,5 +227,4 @@ const TaskTable = () => {
     </div>
   );
 };
-
 export default TaskTable;
