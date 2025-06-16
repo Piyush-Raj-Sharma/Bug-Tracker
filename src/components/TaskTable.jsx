@@ -5,6 +5,7 @@ import TaskFilterBar from "./TaskFilterBar";
 import { nanoid } from "nanoid";
 import CreateTask from "./CreateTask";
 import ViewTaskDrawer from "./ViewTaskDrawer";
+import { Eye, Trash2 } from "lucide-react";
 
 const TaskTable = () => {
   const [tasks, setTasks] = useState([
@@ -34,8 +35,48 @@ const TaskTable = () => {
     },
     {
       id: nanoid(),
-      title: "Clean ",
-      priority: "Critical",
+      title: "Clean up code",
+      priority: "Medium",
+      status: "Pending Approval",
+      assignee: "Alex",
+      deadline: "2025-06-20",
+    },
+    {
+      id: nanoid(),
+      title: "Clean up code",
+      priority: "Medium",
+      status: "Pending Approval",
+      assignee: "Alex",
+      deadline: "2025-06-20",
+    },
+    {
+      id: nanoid(),
+      title: "Clean up code",
+      priority: "Medium",
+      status: "Pending Approval",
+      assignee: "Alex",
+      deadline: "2025-06-20",
+    },
+    {
+      id: nanoid(),
+      title: "Clean up code",
+      priority: "Medium",
+      status: "Pending Approval",
+      assignee: "Alex",
+      deadline: "2025-06-20",
+    },
+    {
+      id: nanoid(),
+      title: "Clean up code",
+      priority: "Medium",
+      status: "Pending Approval",
+      assignee: "Alex",
+      deadline: "2025-06-20",
+    },
+    {
+      id: nanoid(),
+      title: "Clean up code",
+      priority: "Medium",
       status: "Pending Approval",
       assignee: "Alex",
       deadline: "2025-06-20",
@@ -115,59 +156,65 @@ const TaskTable = () => {
 
       <TaskFilterBar filters={filters} onFilterChange={setFilters} />
 
-      {/* Table for larger screens */}
-      <div className="hidden md:block overflow-x-auto bg-white rounded-xl shadow mt-4">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-indigo-50 text-indigo-700 text-sm font-semibold">
-            <tr>
-              <th className="px-4 py-3 text-left">Title</th>
-              <th className="px-4 py-3 text-left">Priority</th>
-              <th className="px-4 py-3 text-left">Status</th>
-              <th className="px-4 py-3 text-left">Assignee</th>
-              <th className="px-4 py-3 text-left">Deadline</th>
-              <th className="px-4 py-3 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-100">
-            {filteredTasks.map((task) => (
-              <tr key={task.id} className="hover:bg-gray-50">
-                <td className="px-4 py-4 text-sm text-gray-800">
-                  {task.title}
-                </td>
-                <td className="px-4 py-4">
-                  <span className={getPriorityStyle(task.priority)}>
-                    {task.priority}
-                  </span>
-                </td>
-                <td className="px-4 py-4">
-                  <span className={getStatusStyle(task.status)}>
-                    {task.status}
-                  </span>
-                </td>
-                <td className="px-4 py-4 text-sm text-gray-700">
-                  {task.assignee}
-                </td>
-                <td className="px-4 py-4 text-sm text-gray-500">
-                  {task.deadline}
-                </td>
-                <td className="px-4 py-4 flex gap-2">
-                  <button
-                    onClick={() => handleView(task)}
-                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-sm"
-                  >
-                    View
-                  </button>
-                  <button
-                    onClick={() => handleDelete(task.id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm"
-                  >
-                    Delete
-                  </button>
-                </td>
+      {/* Table for larger screens with sticky header */}
+      <div className="hidden md:block bg-white rounded-xl shadow mt-4">
+        <div className="overflow-auto max-h-[52vh]">
+          <table className="min-w-full table-fixed">
+            <thead className="bg-indigo-50 text-indigo-700 text-sm font-semibold sticky top-0 z-10">
+              <tr>
+                <th className="px-4 py-3 text-left bg-indigo-50">Title</th>
+                <th className="px-4 py-3 text-left bg-indigo-50">Priority</th>
+                <th className="px-4 py-3 text-left bg-indigo-50">Status</th>
+                <th className="px-4 py-3 text-left bg-indigo-50">Assignee</th>
+                <th className="px-4 py-3 text-left bg-indigo-50">Deadline</th>
+                <th className="px-4 py-3 text-left bg-indigo-50">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-100">
+              {filteredTasks.map((task) => (
+                <tr key={task.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-4 text-sm text-gray-800">
+                    {task.title}
+                  </td>
+                  <td className="px-4 py-4">
+                    <span className={getPriorityStyle(task.priority)}>
+                      {task.priority}
+                    </span>
+                  </td>
+                  <td className="px-4 py-4">
+                    <span className={getStatusStyle(task.status)}>
+                      {task.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-700">
+                    {task.assignee}
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-500">
+                    {task.deadline}
+                  </td>
+                  <td className="px-4 py-4 flex gap-2">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleView(task)}
+                        className="p-2 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
+                        title="View Task"
+                      >
+                        <Eye size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(task.id)}
+                        className="p-2 rounded-md bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
+                        title="Delete Task"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Cards for smaller screens */}
@@ -200,13 +247,13 @@ const TaskTable = () => {
                 onClick={() => handleView(task)}
                 className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-xs"
               >
-                View
+                <Eye size={16} />
               </button>
               <button
                 onClick={() => handleDelete(task.id)}
                 className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-xs"
               >
-                Delete
+                <Trash2 size={16} />
               </button>
             </div>
           </div>
