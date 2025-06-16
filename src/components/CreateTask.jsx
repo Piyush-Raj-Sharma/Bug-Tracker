@@ -1,17 +1,31 @@
+import { nanoid } from "nanoid";
 import React from "react";
 import { useForm } from "react-hook-form";
 
-const CreateTask = ({ isOpen, onClose }) => {
+const CreateTask = ({ isOpen, onClose, tasks, setTasks }) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Submitted Task:", data);
-    onClose();
-  };
+const onSubmit = (data) => {
+  data.id = nanoid();
+  setTasks([
+    ...tasks,
+    {
+      ...data,
+      totalTimeSpent: 0,
+      lastSessionDuration: null,
+      isSessionActive: false,
+      sessionStartTime: null,
+    },
+  ]);
+  reset();
+  onClose(); // Close drawer or navigate
+};
+
 
   return (
     <>
@@ -114,7 +128,7 @@ const CreateTask = ({ isOpen, onClose }) => {
               <label className="text-sm text-gray-600">Due Date</label>
               <input
                 type="date"
-                {...register("dueDate", { required: "Due date is required" })}
+                {...register("deadline", { required: "Due date is required" })}
                 className="w-full mt-1 px-4 py-2 rounded-lg bg-white/60 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
               />
               {errors.dueDate && <p className="text-red-500 text-xs mt-1">{errors.dueDate.message}</p>}
@@ -123,6 +137,7 @@ const CreateTask = ({ isOpen, onClose }) => {
             {/* Submit */}
             <div className="pt-4">
               <button
+              onSubmit={handleSubmit(onSubmit)}
                 type="submit"
                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition"
               >

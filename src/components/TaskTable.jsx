@@ -185,9 +185,7 @@ const TaskTable = () => {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Status:</span>
-              <span className={getStatusStyle(task.status)}>
-                {task.status}
-              </span>
+              <span className={getStatusStyle(task.status)}>{task.status}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Assignee:</span>
@@ -217,6 +215,8 @@ const TaskTable = () => {
 
       {/* DRAWERS: Create and View */}
       <CreateTask
+        tasks={tasks}
+        setTasks={setTasks}
         isOpen={showDrawer}
         onClose={() => {
           setShowDrawer(false);
