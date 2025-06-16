@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   ListChecks,
@@ -10,14 +11,25 @@ import {
 } from "lucide-react";
 
 const Sidebar = () => {
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
-
+  const userRole = localStorage.getItem("userRole");
   const toggleSidebar = () => {
     setCollapsed((prev) => !prev);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    navigate("/");
+  };
+
   const navItems = [
-    { label: "Dashboard", icon: <LayoutDashboard size={20} /> },
+    {
+      label: "Dashboard",
+      icon: <LayoutDashboard size={20} />,
+      path:
+        userRole === "manager" ? "/dashboard/manager" : "/dashboard/developer",
+    },
     { label: "Tasks", icon: <ListChecks size={20} /> },
     { label: "Time Tracker", icon: <Clock size={20} /> },
     { label: "Settings", icon: <Settings size={20} /> },
@@ -49,9 +61,9 @@ const Sidebar = () => {
       {/* Nav */}
       <nav className="flex-1 space-y-2">
         {navItems.map((item, idx) => (
-          <a
+          <NavLink
             key={idx}
-            href="#"
+            to={item.path ? item.path : null}
             className="flex items-center px-3 py-2 rounded-lg hover:bg-indigo-600 transition-colors"
           >
             <span className="min-w-[20px]">{item.icon}</span>
@@ -62,7 +74,7 @@ const Sidebar = () => {
             >
               {item.label}
             </span>
-          </a>
+          </NavLink>
         ))}
 
         {/* Logout (Mobile Only) */}
@@ -74,6 +86,7 @@ const Sidebar = () => {
             <LogOut size={20} />
           </span>
           <span
+            onClick={handleLogout}
             className={`ml-3 text-sm font-medium transition-all duration-300 ${
               collapsed ? "opacity-0 w-0" : "opacity-100 w-full"
             }`}
@@ -93,6 +106,7 @@ const Sidebar = () => {
             <LogOut size={20} />
           </span>
           <span
+            onClick={handleLogout}
             className={`ml-3 text-sm font-medium transition-all duration-300 ${
               collapsed ? "opacity-0 w-0" : "opacity-100 w-full"
             }`}

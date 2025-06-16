@@ -1,5 +1,7 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { validateUser } from "../utils/AuthUtils";
 
 const Login = () => {
   const {
@@ -8,9 +10,36 @@ const Login = () => {
     formState: { errors },
   } = useForm();
 
-  const handleLogin = (data) => {
-    console.log("Logging in with:", data.email, data.password);
+  const [authError, setAuthError] = useState("");
+  const navigate = useNavigate();
+
+  const handleLogin = ({ email, password }) => {
+    const result = validateUser(email, password);
+    if (result.valid) {
+      localStorage.setItem("isLoggedIn", true);
+      localStorage.setItem("userRole", result.role);
+
+      // Navigate to dashboard
+      if (result.role === "developer") {
+        navigate("/dashboard/developer");
+      } else if (result.role === "manager") {
+        navigate("/dashboard/manager");
+      } else {
+        setAuthError("Invalid user role");
+      }
+    } else {
+      setAuthError(result.error);
+    }
   };
+
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    const role = localStorage.getItem("userRole");
+    if (isLoggedIn && role) {
+      if (role === "developer") navigate("/dashboard/developer");
+      if (role === "manager") navigate("/dashboard/manager");
+    }
+  }, [navigate]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-indigo-600 px-4">
@@ -19,6 +48,10 @@ const Login = () => {
           FealtyX Tracker
         </h2>
         <p className="text-center text-gray-500">Login to your account</p>
+
+        {authError && (
+          <p className="text-red-500 text-center text-sm">{authError}</p>
+        )}
 
         <form onSubmit={handleSubmit(handleLogin)} className="space-y-4">
           <div>
@@ -58,11 +91,6 @@ const Login = () => {
             Login
           </button>
         </form>
-
-        {/* <p className="text-sm text-center text-gray-400">
-          Demo: dev@fealty.com / 1234 <br />
-          or manager@fealty.com / admin
-        </p> */}
       </div>
     </div>
   );

@@ -1,8 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { formatDuration, intervalToDuration } from "date-fns";
+import useTaskManager from "../hooks/useTaskManager"; // adjust path if different
 
 const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
   const [timers, setTimers] = useState({});
+  const userRole = localStorage.getItem("userRole");
+  const { updateTask } = useTaskManager();
+  const handleApprove = (taskId) => {
+    updateTask(taskId, { managerActions: "Approved" });
+  };
+  const handleReject = (taskId) => {
+    updateTask(taskId, { managerActions: "Rejected" });
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -17,7 +26,7 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
         });
         return updated;
       });
-    }, 1000);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, []);
@@ -63,7 +72,6 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
 
   const formatTime = (seconds) => {
     if (!seconds || seconds <= 0) return "0s";
-
     const duration = intervalToDuration({ start: 0, end: seconds * 1000 });
     return formatDuration(duration, { delimiter: ", " });
   };
@@ -140,47 +148,79 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
                   </span>
                 </div>
 
-                {taskTimer.isActive && (
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Live Session</span>
-                    <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold animate-pulse">
-                      {formatTime(taskTimer.liveDuration)}
-                    </span>
-                  </div>
-                )}
+                {/* Manager sees only total time */}
+                {userRole !== "manager" && (
+                  <>
+                    {taskTimer.isActive && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Live Session</span>
+                        <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold animate-pulse">
+                          {formatTime(taskTimer.liveDuration)}
+                        </span>
+                      </div>
+                    )}
 
-                {!taskTimer.isActive && taskTimer.lastSession !== null && (
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Last Session</span>
-                    <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium">
-                      {formatTime(taskTimer.lastSession)}
-                    </span>
-                  </div>
+                    {!taskTimer.isActive && taskTimer.lastSession !== null && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Last Session</span>
+                        <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium">
+                          {formatTime(taskTimer.lastSession)}
+                        </span>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>
 
-            <div className="mt-6 flex justify-between gap-4">
-              <button
-                onClick={() => {
-                  onClose();
-                  onEdit(task);
-                }}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg"
-              >
-                ✏️ Edit
-              </button>
-              <button
-                onClick={toggleSession}
-                className={`flex-1 py-2 rounded-lg text-white font-semibold transition ${
-                  taskTimer.isActive
-                    ? "bg-red-500 hover:bg-red-600"
-                    : "bg-green-600 hover:bg-green-700"
-                }`}
-              >
-                {taskTimer.isActive ? "End Session" : "Start Session"}
-              </button>
-            </div>
+            {/* Only developer can edit and toggle session */}
+            {userRole === "developer" ? (
+              <div className="mt-6 flex justify-between gap-4">
+                <button
+                  onClick={() => {
+                    onClose();
+                    onEdit(task);
+                  }}
+                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg"
+                >
+                  ✏️ Edit
+                </button>
+                <button
+                  onClick={toggleSession}
+                  className={`flex-1 py-2 rounded-lg text-white font-semibold transition ${
+                    taskTimer.isActive
+                      ? "bg-red-500 hover:bg-red-600"
+                      : "bg-green-600 hover:bg-green-700"
+                  }`}
+                >
+                  {taskTimer.isActive ? "End Session" : "Start Session"}
+                </button>
+              </div>
+            ) : (
+              <div className="mt-6 flex justify-between gap-4">
+                <button
+                  disabled={task.status !== "closed"}
+                  onClick={() => {
+                    onClose();
+                    handleApprove(task.id);
+                  }}
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg"
+                >
+                  Approve
+                </button>
+                <button
+                  disabled={task.status !== "closed"}
+                  onClick={() => {
+                    onClose();
+                    handleReject(task.id);
+                  }}
+                  className={`flex-1 py-2 rounded-lg text-white font-semibold transition 
+                    bg-red-500 hover:bg-red-600`}
+                >
+                  Reject
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

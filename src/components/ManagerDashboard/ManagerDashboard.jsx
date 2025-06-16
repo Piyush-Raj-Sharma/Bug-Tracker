@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import SidebarWrapper from "./SidebarWrapper";
-import Topbar from "./Topbar";
-import DashboardContent from "./DashboardContent";
-import { useNavigate } from "react-router-dom";
+import SidebarWrapper from "../SidebarWrapper";
+import Topbar from "../Topbar";
+import DashboardContent from "../DashboardContent";
 
 
-const Dashboard = () => {
+const ManagerDashboard = () => {
   const [showSidebar, setShowSidebar] = useState(false);
+ 
 
   return (
     <div className="flex min-h-screen bg-gray-100 relative">
@@ -20,4 +20,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default ManagerDashboard;
