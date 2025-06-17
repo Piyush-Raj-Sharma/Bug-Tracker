@@ -105,10 +105,6 @@ src/
 ├── hooks/
 │   └── useTaskManager.js   # Custom hook for managing task operations
 │
-├── pages/
-│   ├── DeveloperDashboard.jsx
-│   ├── ManagerDashboard.jsx
-│   └── Login.jsx
 │
 ├── utils/
 │   ├── AuthUtils.js        # Login validation
