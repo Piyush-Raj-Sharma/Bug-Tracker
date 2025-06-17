@@ -12,12 +12,7 @@ const users = [
   },
 ];
 
-/**
- * Validates user credentials
- * @param {string} email
- * @param {string} password
- * @returns {{ valid: boolean, role?: string, error?: string }}
- */
+
 export const validateUser = (email, password) => {
   const user = users.find((u) => u.email === email);
 

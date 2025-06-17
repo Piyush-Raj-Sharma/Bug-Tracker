@@ -6,7 +6,7 @@ const TaskFilterBar = ({ filters, onFilterChange }) => {
       {/* Search Input */}
       <div className="relative w-full sm:w-[48%] lg:w-1/4">
         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-          {/* Magnifier Icon SVG */}
+          
           <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 20 20"><circle cx="9" cy="9" r="7"/><path d="M16 16l-3-3"/></svg>
         </span>
         <input

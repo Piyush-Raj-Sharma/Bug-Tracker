@@ -1,8 +1,6 @@
 import React from "react";
 import useTaskManager from "../hooks/useTaskManager";
 import { Bug, CheckCircle2, CircleDot, AlertOctagon } from "lucide-react";
-// You can install Lucide icons using: npm install lucide-react --save
-// Or use any icon library you like
 
 const summaryStyles = [
   {
@@ -52,7 +50,7 @@ const TaskSummaryCards = () => {
     (t) => t.managerActions && t.managerActions.toLowerCase() === "approved"
   ).length;
 
-  // Generate counts in the same order as summaryStyles
+
   const counts = [openBugs, totalBugs, criticalBugs, approvedBugs];
 
   return (

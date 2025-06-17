@@ -56,7 +56,7 @@ const TaskTable = () => {
       </div>
       {/* Filters */}
       <TaskFilterBar filters={filters} onFilterChange={setFilters} />
-      {/* DESKTOP TABLE -- only uses scroll on desktop for overflow */}
+      {/* DESKTOP TABLE */}
       <div className="hidden md:block bg-white rounded-xl shadow mt-4">
         <div className="overflow-auto max-h-[60vh]">
           <table className="min-w-full table-fixed">
@@ -118,7 +118,7 @@ const TaskTable = () => {
           </table>
         </div>
       </div>
-      {/* MOBILE CARDS -- naturally flow, allow page scroll */}
+      {/* MOBILE CARDS */}
       <div className="md:hidden space-y-3 mt-4">
         {filteredTasks.length === 0 ? (
           <div className="bg-white text-gray-500 rounded-xl shadow p-6 text-center">

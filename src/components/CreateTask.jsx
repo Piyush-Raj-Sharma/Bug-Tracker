@@ -135,7 +135,7 @@ const CreateTask = ({ isOpen, onClose }) => {
               )}
             </div>
 
-            {/* Due Date */}
+            {/* Deadline */}
             <div>
               <label className="text-sm text-gray-600">Due Date</label>
               <input

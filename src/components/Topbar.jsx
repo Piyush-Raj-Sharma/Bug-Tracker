@@ -18,12 +18,11 @@ const Topbar = ({ onMenuClick }) => {
           className="transition-transform group-hover:scale-110"
         />
       </button>
-      {/* Dashboard Title */}
+      
       <h1 className="text-2xl sm:text-2xl font-semibold text-black">
         Dashboard
       </h1>
 
-      {/* Welcome & Role Badge */}
       <div className="hidden sm:flex items-center space-x-3">
         {userRole === "developer" && (
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 font-semibold font-sans text-sm shadow-sm">

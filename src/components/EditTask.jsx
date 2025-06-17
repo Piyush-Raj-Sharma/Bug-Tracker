@@ -121,7 +121,6 @@ const EditTask = ({ isOpen, onClose, task }) => {
               />
               {errors.deadline && <p className="text-red-500 text-xs mt-1">{errors.deadline.message}</p>}
             </div>
-            {/* Manager Actions (REMOVED COMPLETELY) */}
             {/* Submit */}
             <div className="pt-4">
               <button

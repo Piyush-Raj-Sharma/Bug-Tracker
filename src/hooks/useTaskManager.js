@@ -2,11 +2,11 @@ import { useEffect } from "react";
 import { nanoid } from "nanoid";
 import { create } from "zustand";
 
-// Zustand store with localStorage support
+
 const useTaskStore = create((set, get) => ({
   tasks: [],
 
-  // Load from localStorage
+
   init: () => {
     const saved = localStorage.getItem("tasks");
     if (saved) {
@@ -23,7 +23,7 @@ const useTaskStore = create((set, get) => ({
     }
   },
 
-  // Add a new task
+
   addTask: (data) => {
     const newTask = {
       id: nanoid(),
@@ -39,14 +39,14 @@ const useTaskStore = create((set, get) => ({
     localStorage.setItem("tasks", JSON.stringify(updatedTasks));
   },
 
-  // Delete a task by ID
+
   deleteTask: (id) => {
     const updatedTasks = get().tasks.filter((task) => task.id !== id);
     set({ tasks: updatedTasks });
     localStorage.setItem("tasks", JSON.stringify(updatedTasks));
   },
 
-  // ✅ Generic update: update any fields of a task
+  
   updateTask: (id, updates) => {
     const updatedTasks = get().tasks.map((task) =>
       task.id === id ? { ...task, ...updates } : task
@@ -56,7 +56,7 @@ const useTaskStore = create((set, get) => ({
   },
 }));
 
-// Custom hook
+
 const useTaskManager = () => {
   const { tasks, addTask, deleteTask, updateTask, init } = useTaskStore();
 
