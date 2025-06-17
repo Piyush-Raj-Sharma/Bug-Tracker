@@ -13,13 +13,16 @@ const Login = () => {
   const [authError, setAuthError] = useState("");
   const navigate = useNavigate();
 
+  const SESSION_EXPIRY_DURATION = 1000 * 60 * 60; 
+
   const handleLogin = ({ email, password }) => {
     const result = validateUser(email, password);
     if (result.valid) {
-      localStorage.setItem("isLoggedIn", true);
+      const expirationTime = Date.now() + SESSION_EXPIRY_DURATION;
+      localStorage.setItem("isLoggedIn", "true");
       localStorage.setItem("userRole", result.role);
+      localStorage.setItem("expiresAt", expirationTime);
 
-      // Navigate to dashboard
       if (result.role === "developer") {
         navigate("/dashboard/developer");
       } else if (result.role === "manager") {
@@ -35,9 +38,16 @@ const Login = () => {
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
     const role = localStorage.getItem("userRole");
-    if (isLoggedIn && role) {
+    const expiresAt = localStorage.getItem("expiresAt");
+
+    if (isLoggedIn && role && expiresAt && Date.now() < Number(expiresAt)) {
       if (role === "developer") navigate("/dashboard/developer");
       if (role === "manager") navigate("/dashboard/manager");
+    } else {
+      // Clear session if expired or invalid
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("userRole");
+      localStorage.removeItem("expiresAt");
     }
   }, [navigate]);
 
@@ -91,6 +101,7 @@ const Login = () => {
             Login
           </button>
         </form>
+
         <div className="space-y-1 text-sm text-gray-500">
           <p>
             <span className="font-medium">Developer:</span> dev@example.com /
