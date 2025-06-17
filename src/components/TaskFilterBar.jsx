@@ -47,10 +47,9 @@ const TaskFilterBar = ({ filters, onFilterChange }) => {
         className="border border-gray-300 px-3 py-2 rounded-lg w-full sm:w-[24%] lg:w-1/5 bg-white shadow-sm hover:border-indigo-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition text-gray-700"
       >
         <option value="">All Statuses</option>
-        <option value="Pending Start">Pending Start</option>
+        <option value="Open">Open</option>
         <option value="In Progress">In Progress</option>
-        <option value="Pending Approval">Pending Approval</option>
-        <option value="Completed">Completed</option>
+        <option value="Closed">Closed</option>
       </select>
     </div>
   );
