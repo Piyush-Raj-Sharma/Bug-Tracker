@@ -20,9 +20,11 @@ const TaskTable = () => {
 const filteredTasks = tasks.filter((task) => {
   const title = (task.title || "").toLowerCase();
   const assignee = (task.assignee || "").toLowerCase();
+  const deadline = (task.deadline || "").toLowerCase();
+  const managerActions = (task.managerActions || "").toLowerCase();
   const search = (filters.search || "").toLowerCase();
 
-  const matchesSearch = title.includes(search) || assignee.includes(search);
+  const matchesSearch = title.includes(search) || assignee.includes(search) || deadline.includes(search) || managerActions.includes(search);
   const matchesPriority = !filters.priority || task.priority === filters.priority;
   const matchesStatus = !filters.status || task.status === filters.status;
 
