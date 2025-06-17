@@ -17,14 +17,18 @@ const TaskTable = () => {
   const [showDrawer, setShowDrawer] = useState(false);
   const [showEditDrawer, setShowEditDrawer] = useState(false);
 
-  const filteredTasks = tasks.filter((task) => {
-    const matchesSearch =
-      task.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-      task.assignee.toLowerCase().includes(filters.search.toLowerCase());
-    const matchesPriority = !filters.priority || task.priority === filters.priority;
-    const matchesStatus = !filters.status || task.status === filters.status;
-    return matchesSearch && matchesPriority && matchesStatus;
-  });
+const filteredTasks = tasks.filter((task) => {
+  const title = (task.title || "").toLowerCase();
+  const assignee = (task.assignee || "").toLowerCase();
+  const search = (filters.search || "").toLowerCase();
+
+  const matchesSearch = title.includes(search) || assignee.includes(search);
+  const matchesPriority = !filters.priority || task.priority === filters.priority;
+  const matchesStatus = !filters.status || task.status === filters.status;
+
+  return matchesSearch && matchesPriority && matchesStatus;
+});
+
 
   const handleDelete = (id) => deleteTask(id);
   const handleView = (task) => {
