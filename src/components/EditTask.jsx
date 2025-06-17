@@ -41,7 +41,7 @@ const EditTask = ({ isOpen, onClose, task }) => {
       >
         <div className="h-full overflow-y-auto p-6 flex flex-col">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold text-gray-800">✏️ Edit Task</h2>
+            <h2 className="text-2xl font-semibold text-gray-800">✏️ Edit Bug</h2>
             <button
               className="text-gray-600 hover:text-red-500 text-2xl font-bold"
               onClick={onClose}
@@ -128,7 +128,7 @@ const EditTask = ({ isOpen, onClose, task }) => {
                 type="submit"
                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg"
               >
-                Update Task
+                Update Bug
               </button>
             </div>
           </form>

@@ -4,18 +4,14 @@ import CreateBugBtn from "./CreateBugBtn";
 import TaskFilterBar from "./TaskFilterBar";
 import CreateTask from "./CreateTask";
 import ViewTaskDrawer from "./ViewTaskDrawer";
-import { Eye, Trash2, CheckCircle } from "lucide-react";
+import { Eye, Trash2 } from "lucide-react";
 import useTaskManager from "../hooks/useTaskManager";
 import EditTask from "./EditTask";
 
 const TaskTable = () => {
   const userRole = localStorage.getItem("userRole");
   const { tasks, deleteTask } = useTaskManager();
-  const [filters, setFilters] = useState({
-    search: "",
-    priority: "",
-    status: "",
-  });
+  const [filters, setFilters] = useState({ search: "", priority: "", status: "" });
   const [selectedTask, setSelectedTask] = useState(null);
   const [isViewing, setIsViewing] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
@@ -25,8 +21,7 @@ const TaskTable = () => {
     const matchesSearch =
       task.title.toLowerCase().includes(filters.search.toLowerCase()) ||
       task.assignee.toLowerCase().includes(filters.search.toLowerCase());
-    const matchesPriority =
-      !filters.priority || task.priority === filters.priority;
+    const matchesPriority = !filters.priority || task.priority === filters.priority;
     const matchesStatus = !filters.status || task.status === filters.status;
     return matchesSearch && matchesPriority && matchesStatus;
   });
@@ -61,9 +56,9 @@ const TaskTable = () => {
       </div>
       {/* Filters */}
       <TaskFilterBar filters={filters} onFilterChange={setFilters} />
-      {/* Desktop Table */}
+      {/* DESKTOP TABLE -- only uses scroll on desktop for overflow */}
       <div className="hidden md:block bg-white rounded-xl shadow mt-4">
-        <div className="overflow-auto max-h-[52vh]">
+        <div className="overflow-auto max-h-[60vh]">
           <table className="min-w-full table-fixed">
             <thead className="bg-indigo-50 text-indigo-700 text-sm font-semibold sticky top-0 z-10">
               <tr>
@@ -86,26 +81,17 @@ const TaskTable = () => {
               ) : (
                 filteredTasks.map((task) => (
                   <tr key={task.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-4 text-sm text-gray-800">
-                      {task.title}
+                    <td className="px-4 py-4 text-sm text-gray-800">{task.title}</td>
+                    <td className="px-4 py-4">
+                      <span className={getPriorityStyle(task.priority)}>{task.priority}</span>
                     </td>
                     <td className="px-4 py-4">
-                      <span className={getPriorityStyle(task.priority)}>
-                        {task.priority}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4">
-                      <span className={getStatusStyle(task.status)}>
-                        {task.status}
-                      </span>
+                      <span className={getStatusStyle(task.status)}>{task.status}</span>
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-700">
                       {task.assignee}
                     </td>
-                    <td className="px-4 py-4 text-sm text-gray-500">
-                      {task.deadline}
-                    </td>
-                    {/* FIX: Always show managerActions */}
+                    <td className="px-4 py-4 text-sm text-gray-500">{task.deadline}</td>
                     <td className="px-4 py-4 text-sm text-gray-600">
                       {task.managerActions || "-"}
                     </td>
@@ -132,8 +118,8 @@ const TaskTable = () => {
           </table>
         </div>
       </div>
-      {/* Mobile Cards */}
-      <div className="md:hidden space-y-4 mt-4">
+      {/* MOBILE CARDS -- naturally flow, allow page scroll */}
+      <div className="md:hidden space-y-3 mt-4">
         {filteredTasks.length === 0 ? (
           <div className="bg-white text-gray-500 rounded-xl shadow p-6 text-center">
             No tasks found matching the current filters.
@@ -142,67 +128,66 @@ const TaskTable = () => {
           filteredTasks.map((task) => (
             <div
               key={task.id}
-              className="bg-white shadow rounded-xl p-4 space-y-2 text-sm"
+              className="bg-white shadow rounded-lg p-3 flex flex-col gap-2 text-sm border border-gray-100"
             >
-              <div className="flex justify-between">
-                <h4 className="font-semibold text-gray-800">{task.title}</h4>
-                <span className={getPriorityStyle(task.priority)}>
+              <div className="flex items-center justify-between gap-2 min-w-0">
+                <h4 className="font-semibold text-gray-800 truncate min-w-0 text-base">
+                  {task.title}
+                </h4>
+                <span
+                  className={`${getPriorityStyle(
+                    task.priority
+                  )} px-2 py-0.5 rounded-full text-xs font-bold shadow-sm capitalize whitespace-nowrap`}
+                >
                   {task.priority}
                 </span>
               </div>
-              <div className="flex justify-between items-center">
+              <div className="flex items-center justify-between">
                 <span className="text-gray-600">Status:</span>
-                <span className={getStatusStyle(task.status)}>
+                <span
+                  className={`${getStatusStyle(task.status)} px-2 py-0.5 rounded-full text-xs font-semibold capitalize`}
+                >
                   {task.status}
                 </span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex items-center justify-between min-w-0">
                 <span className="text-gray-600">Assignee:</span>
-                <span className="text-gray-800">{task.assignee}</span>
+                <span className="text-gray-800 truncate max-w-[120px]">{task.assignee}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex items-center justify-between">
                 <span className="text-gray-600">Deadline:</span>
                 <span className="text-gray-500">{task.deadline}</span>
               </div>
-              {/* FIX: Show Manager Actions always if set */}
               {task.managerActions && (
-                <div className="flex justify-between">
+                <div className="flex items-center justify-between">
                   <span className="text-gray-600">Manager Actions:</span>
-                  <span className="text-gray-700">
+                  <span className="text-gray-700 capitalize text-xs">
                     {task.managerActions}
                   </span>
                 </div>
               )}
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex items-center justify-end gap-2 pt-2">
                 <button
                   onClick={() => handleView(task)}
                   className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-xs"
+                  aria-label="View"
                 >
                   <Eye size={16} />
                 </button>
-                {userRole === "developer" ? (
-                  <button
-                    onClick={() => handleDelete(task.id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-xs flex items-center gap-1"
-                  >
-                    <Trash2 size={16} />
-                    <span>Delete</span>
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => alert("Approved!")}
-                    className="bg-green-100 text-green-700 px-3 py-1 rounded hover:bg-green-200 text-xs flex items-center gap-1"
-                  >
-                    <CheckCircle className="w-4 h-4" />
-                    <span>Approve</span>
-                  </button>
-                )}
+                <button
+                  onClick={() => handleDelete(task.id)}
+                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-xs flex items-center gap-1"
+                  aria-label="Delete"
+                >
+                  <Trash2 size={16} />
+                </button>
               </div>
             </div>
           ))
         )}
       </div>
-      {/* Drawers */}
+
+      {/* POPUP DRAWERS */}
       <CreateTask
         isOpen={showDrawer}
         onClose={() => {
@@ -227,4 +212,5 @@ const TaskTable = () => {
     </div>
   );
 };
+
 export default TaskTable;

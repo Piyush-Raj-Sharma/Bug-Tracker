@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   ListChecks,
+   Bug,
   Clock,
   Settings,
   LogOut,
@@ -30,7 +31,7 @@ const Sidebar = () => {
       path:
         userRole === "manager" ? "/dashboard/manager" : "/dashboard/developer",
     },
-    { label: "Tasks", icon: <ListChecks size={20} /> },
+    { label: "Bugs", icon: <ListChecks size={20} /> },
     { label: "Time Tracker", icon: <Clock size={20} /> },
     { label: "Settings", icon: <Settings size={20} /> },
   ];

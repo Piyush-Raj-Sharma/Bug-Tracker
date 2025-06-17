@@ -1,26 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { formatDuration, intervalToDuration } from "date-fns";
-import useTaskManager from "../hooks/useTaskManager"; // adjust path if different
+import useTaskManager from "../hooks/useTaskManager";
+import {
+  getTaskTimeFromStorage,
+  setTaskTimeInStorage,
+} from "../utils/taskTimeStorage";
 
 const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
   const [timers, setTimers] = useState({});
   const userRole = localStorage.getItem("userRole");
   const { updateTask } = useTaskManager();
 
-  // Approve handler: managerActions = "Approved", status stays closed
   const handleApprove = (taskId) => {
-    if (task && task.status && task.status.toLowerCase() === "closed") {
+    if (task && task.status?.toLowerCase() === "closed") {
       updateTask(taskId, { managerActions: "Approved" });
     }
   };
 
-  // Reject handler: managerActions = "Rejected", status becomes open
   const handleReject = (taskId) => {
-    if (task && task.status && task.status.toLowerCase() === "closed") {
-      updateTask(taskId, {
-        managerActions: "Rejected",
-        status: "Open",
-      });
+    if (task && task.status?.toLowerCase() === "closed") {
+      updateTask(taskId, { managerActions: "Rejected", status: "Open" });
     }
   };
 
@@ -37,17 +36,17 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
         });
         return updated;
       });
-    }, 3000);
+    }, 1000);
     return () => clearInterval(interval);
   }, []);
 
-  // Initialize/reset timer state on task change
   useEffect(() => {
     if (!task) return;
+    const storedTime = getTaskTimeFromStorage(task.id);
     setTimers((prev) => ({
       ...prev,
       [task.id]: prev[task.id] || {
-        totalTime: 0,
+        totalTime: storedTime,
         isActive: false,
         startTime: null,
         lastSession: null,
@@ -66,13 +65,17 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
         lastSession: null,
         liveDuration: 0,
       };
+
       if (prevState.isActive) {
         const now = Date.now();
         const sessionDuration = Math.floor((now - prevState.startTime) / 1000);
+        const updatedTotal = prevState.totalTime + sessionDuration;
+        setTaskTimeInStorage(taskId, updatedTotal);
+
         return {
           ...prev,
           [taskId]: {
-            totalTime: prevState.totalTime + sessionDuration,
+            totalTime: updatedTotal,
             isActive: false,
             startTime: null,
             lastSession: sessionDuration,
@@ -101,31 +104,21 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
 
   if (!isOpen || !task) return null;
   const taskTimer = timers[task.id] || {};
-
-  // Case-insensitive check for 'closed' status
-  const isClosed = task.status && task.status.toLowerCase() === "closed";
+  const isClosed = task.status?.toLowerCase() === "closed";
 
   return (
     <>
-      <div
-        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" onClick={onClose} />
       <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
         <div className="bg-white/90 backdrop-blur-xl border border-white/40 shadow-2xl rounded-xl w-full max-w-xl h-[70vh] overflow-hidden flex flex-col transition-all duration-300">
           <div className="p-6 h-full flex flex-col">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-indigo-700">
-                Task Details
-              </h2>
-              <button
-                onClick={onClose}
-                className="text-gray-500 hover:text-gray-800 text-2xl font-bold"
-                aria-label="Close details"
-              >
+              <h2 className="text-xl font-bold text-indigo-700">Task Details</h2>
+              <button onClick={onClose} className="text-gray-500 hover:text-gray-800 text-2xl font-bold" aria-label="Close details">
                 &times;
               </button>
             </div>
+
             <div className="space-y-4 overflow-y-auto flex-grow text-sm pr-1">
               <div>
                 <p className="text-gray-500">Title</p>
@@ -133,9 +126,7 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
               </div>
               <div>
                 <p className="text-gray-500">Description</p>
-                <p className="text-gray-700">
-                  {task.description || "No description provided."}
-                </p>
+                <p className="text-gray-700">{task.description || "No description provided."}</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -155,18 +146,27 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
                   <p className="text-gray-800">{task.deadline}</p>
                 </div>
               </div>
+
               <hr className="my-4 border-gray-200" />
+
               <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 shadow-sm space-y-3">
                 <h3 className="text-sm font-semibold text-indigo-600 mb-1 flex items-center gap-2">
                   ⏱️ Time Tracking
                 </h3>
+
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Total Time Spent</span>
+                  <span className="text-gray-600 font-semibold">Total Time Spent</span>
                   <span className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-medium">
                     {formatTime(taskTimer.totalTime)}
                   </span>
                 </div>
-                {/* Manager sees only total time */}
+
+                {userRole === "manager" && (
+                  <div className="text-xs text-gray-400">
+                    (This is the time logged by the developer for this task.)
+                  </div>
+                )}
+
                 {userRole !== "manager" && (
                   <>
                     {taskTimer.isActive && (
@@ -189,7 +189,7 @@ const ViewTaskDrawer = ({ isOpen, onClose, task, onEdit }) => {
                 )}
               </div>
             </div>
-            {/* Only developer can edit and toggle session */}
+
             {userRole === "developer" ? (
               <div className="mt-6 flex justify-between gap-4">
                 <button

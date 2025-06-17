@@ -156,7 +156,7 @@ const CreateTask = ({ isOpen, onClose }) => {
                 type="submit"
                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition"
               >
-                Create Task
+                Create Bug
               </button>
             </div>
           </form>

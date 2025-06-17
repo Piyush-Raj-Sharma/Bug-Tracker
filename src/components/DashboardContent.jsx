@@ -9,7 +9,7 @@ const DashboardContent = () => {
       <TaskSummaryCards />
 
       {/* Scrollable Table Area */}
-      <section className="bg-white rounded-xl shadow-md p-4 sm:p-6 flex-1 max-h-[72vh]">
+      <section className="bg-white rounded-xl shadow-md p-4 sm:p-6 flex-1 min-h-[72vh]">
         <TaskTable />
       </section>
     </main>
