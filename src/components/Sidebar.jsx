@@ -46,7 +46,7 @@ const Sidebar = () => {
         {!collapsed ? (
           <>
             <h1 className="text-2xl font-bold transition-opacity duration-300">
-              FealtyX
+              Bug Tracker
             </h1>
             <button onClick={toggleSidebar}>
               <ChevronLeft size={24} />
