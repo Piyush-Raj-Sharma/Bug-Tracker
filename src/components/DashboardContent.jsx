@@ -7,7 +7,7 @@ const DashboardContent = () => {
     <main className="p-4 sm:p-6 space-y-6 overflow-hidden h-full">
       <TaskSummaryCards />
 
-      <section className="bg-white rounded-xl shadow-md p-4 sm:p-6 flex-1 min-h-[72vh]">
+      <section className="bg-white rounded-xl shadow-md p-4 sm:p-6 flex-1 min-h-[70vh]">
         <TaskTable />
       </section>
     </main>
