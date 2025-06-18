@@ -1,4 +1,4 @@
-# 🐞 FealtyX Bug & Task Tracker
+# 🐞 Bug & Task Tracker
 
 A modern bug and task tracking system built with **React**, **Tailwind CSS**, and **Vite**. It supports **Developer** and **Manager** roles with dedicated dashboards, task status workflows, time tracking, and beautiful UI components using Lucide icons and Zustand for state management.
 
